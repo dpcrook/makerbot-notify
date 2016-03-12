@@ -167,12 +167,12 @@ else:
     
     dated_files = [( os.path.getmtime(os.path.join(logfile_dir, fn)), 
                      os.path.basename(os.path.join(logfile_dir, fn)) )
-               for fn in os.listdir(os.path.expanduser(logfile_dir)) if fn.lower().endswith('.log')]
+               for fn in os.listdir(logfile_dir) if fn.lower().endswith('.log')]
     # print dated_files
     dated_files.sort()
     dated_files.reverse()
     newest = dated_files[0][1]
-    logfile_name = os.path.join(os.path.expanduser(logfile_dir), newest)
+    logfile_name = os.path.join(logfile_dir, newest)
     
 print logfile_name
 

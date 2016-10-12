@@ -83,9 +83,9 @@ def send_notification(data):
     done = data['change_time']
     filename = data['filename']
     duration = done - start
-    s = 'print job %(filename)s %(status)s took %(duration)s' % vars()
+    s = '%(duration)s job %(filename)s %(status)s' % vars()
     print s
-    short = '%(filename)s %(status)s' % vars()
+    short = '%(status)s %(filename)s' % vars()
     if done > CURRENT_TIME:
         print "will send notice"
         send_email(short, s)

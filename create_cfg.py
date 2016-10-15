@@ -10,8 +10,12 @@ example_config = [{'gmail' :
                    'gmail_password': 'P@ssword!',
                    'email_to_list': ['me@gmail.com', 'bill@gmail.com'],
                    'subject': 'print job status'
+                  },
+},
+                  {'motion' :
+                   {'motion_dir': '/data/motion'}
                   }
-}]
+]
 
 
 # write json file

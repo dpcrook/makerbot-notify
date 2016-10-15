@@ -44,3 +44,20 @@ print job pgp-4-top.gcode concluded took 0:20:09
 Email sent!
 ```
 
+## installing this script
+
+ - clone the rpo locally
+ - edit the `create_cfg.py` and run it
+ 
+### ubuntu 16.04
+
+
+
+If you get error like this
+```
+ImportError: No module named dateutil.parser
+```
+
+```
+sudo apt install python-dateutil
+```

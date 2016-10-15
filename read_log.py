@@ -19,10 +19,16 @@ import dateutil.parser
 import datetime
 import json
 import os
+from os.path import basename
 import re
 import smtplib
 import sys
 import time
+
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
 
 exc_path = os.path.dirname(sys.argv[0])
 
@@ -60,7 +66,9 @@ CONFIG = {}
 with open (os.path.join(exc_path, 'example.json'), 'r') as jsonfile:
     CONFIG = json_load_byteified(jsonfile)
 
+MOTION_DIR = CONFIG[1]['motion']['motion_dir']
 print 'will send any email as', CONFIG[0]['gmail']['gmail_user']
+print 'will look in motion dir', MOTION_DIR
 
 
 # http://code.activestate.com/recipes/157035-tail-f-in-python/#c4
@@ -108,14 +116,47 @@ Subject: %s
 %s
 """ % (fromc, ", ".join(to), subject, body)
 
-    print email_text
+    #print email_text
+
+    msg = MIMEMultipart()
+    msg['From'] = fromc
+    msg['To'] = COMMASPACE.join(to)
+    msg['Date'] = formatdate(localtime=True)
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(jobinfo))
+    #print msg
+    
+    motion_dir = MOTION_DIR
+    dated_files = [( os.path.getmtime(os.path.join(motion_dir, fn)), 
+                     os.path.basename(os.path.join(motion_dir, fn)) )
+               for fn in os.listdir(motion_dir) if fn.lower().endswith('.jpg')]
+    #print dated_files[-1]
+    dated_files.sort()
+    dated_files.reverse()
+    newest = dated_files[0][1]
+    newest_minus_some = dated_files[9][1]
+    print newest, newest_minus_some
+    filename = os.path.join(motion_dir, newest_minus_some)
+    
+    files = [filename]
+    for f in files or []:
+    
+        with open(f, "rb") as fil:
+            part = MIMEApplication(
+                fil.read(),
+                Name=basename(f)
+            )
+            part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+            msg.attach(part)
     
     try:  
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo()
-        server.login(gmail_user, gmail_password)
-        server.sendmail(fromc, to, email_text)
-        server.close()
+        if True:
+            server.ehlo()
+            server.login(gmail_user, gmail_password)
+            server.sendmail(fromc, to, msg.as_string())
+            server.close()
 
         print 'Email sent!'
     except:  

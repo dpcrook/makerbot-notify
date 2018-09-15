@@ -1,0 +1,27 @@
+# cd ~/projects/makerbot-notify/conf
+# sudo cp motion.service  /etc/systemd/system/motion@.service
+# sudo chmod 644 /etc/systemd/system/motion@.service
+# sudo systemctl daemon-reload
+# sudo systemctl enable motion@dpc.service
+# sudo systemctl status motion@dpc.service
+# sudo systemctl start  motion@dpc.service
+# screen -D -R -S motionsvc
+[Unit]
+Description=Motion webcam (screen session)
+After=network.target time-sync.target
+ConditionPathExists=/home/dpc/.motion/motion.conf
+
+[Service]
+Type=forking
+WorkingDirectory=/home/dpc/.motion
+# run motion in non-daemon mode
+ExecStart=/usr/bin/screen -dmS motionsvc -t time /usr/bin/motion -n -l /home/dpc/.motion/motion.log
+ExecStop=/usr/bin/screen -S motionsvc -p time -X stuff "^C"
+TimeoutStopSec=5
+StandardOutput=journal+console
+StandardError=journal+console
+SuccessExitStatus=1 SIGKILL
+User=dpc
+
+[Install]
+WantedBy=default.target

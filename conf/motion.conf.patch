@@ -1,0 +1,87 @@
+--- /etc/motion/motion.conf	2016-10-23 12:45:48.000000000 -0600
++++ /home/dpc/.motion/motion.conf	2018-08-23 09:58:24.058917669 -0600
+@@ -84,7 +84,7 @@
+ frequency 0
+ 
+ # Override the power line frequency for the webcam. (normally not necessary)
+-# Values: 
++# Values:
+ # -1 : Do not modify device setting
+ # 0  : Power line frequency Disabled
+ # 1  : 50hz
+@@ -97,10 +97,16 @@
+ rotate 0
+ 
+ # Image width (pixels). Valid range: Camera dependent, default: 352
+-width 320
++#width 320
++#width 1920
++#width 640
++width 1280
+ 
+ # Image height (pixels). Valid range: Camera dependent, default: 288
+-height 240
++#height 240
++#height 1080
++#height 360
++height 720
+ 
+ # Maximum number of frames to be captured per second.
+ # Valid range: 2-100. Default: 100 (almost no limit).
+@@ -335,7 +341,7 @@
+ # hevc - H.265 / HEVC (High Efficiency Video Coding)
+ ffmpeg_video_codec mpeg4
+ 
+-# When creating videos, should frames be duplicated in order 
++# When creating videos, should frames be duplicated in order
+ # to keep up with the requested frames per second
+ # (default: true)
+ ffmpeg_duplicate_frames true
+@@ -447,7 +453,8 @@
+ 
+ # Target base directory for pictures and films
+ # Recommended to use absolute path. (Default: current working directory)
+-target_dir /var/lib/motion
++#target_dir /var/lib/motion
++target_dir /data/motion
+ 
+ # File path for snapshots (jpeg or ppm) relative to target_dir
+ # Default: %v-%Y%m%d%H%M%S-snapshot
+@@ -488,7 +495,8 @@
+ ############################################################
+ 
+ # The mini-http server listens to this port for requests (default: 0 = disabled)
+-stream_port 8081
++#stream_port 8081
++stream_port 8089
+ 
+ # Quality of the jpeg (in percent) images produced (default: 50)
+ stream_quality 50
+@@ -501,7 +509,8 @@
+ stream_maxrate 1
+ 
+ # Restrict stream connections to localhost only (default: on)
+-stream_localhost on
++#stream_localhost on
++stream_localhost off
+ 
+ # Limits the number of images per connection (default: 0 = unlimited)
+ # Number can be defined by multiplying actual stream rate by desired number of seconds
+@@ -521,6 +530,7 @@
+ # Percentage to scale the stream image for preview
+ # Default: 25
+ ; stream_preview_scale 25
++##stream_preview_scale 100
+ 
+ # Have stream preview image start on a new line
+ # Default: no
+@@ -531,7 +541,8 @@
+ ############################################################
+ 
+ # TCP/IP port for the http server to listen on (default: 0 = disabled)
+-webcontrol_port 8080
++#webcontrol_port 8080
++webcontrol_port 8088
+ 
+ # Restrict control connections to localhost only (default: on)
+ webcontrol_localhost on

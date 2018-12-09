@@ -109,8 +109,15 @@ sudo service motion@dpc.service restart
 ```shell
 tail -f /home/dpc/.motion/motion.log
 ls -latr /misc/motion-data/data
+
+screen -ls
+screen -r motionsvc
 ```
 
-
+<kbd>Ctrl-a d</kbd>
 
 ## maintenance
+
+```shell
+find /misc/motion-data/data/ -name "*.jpg" -type f -exec rm "{}" \;
+```

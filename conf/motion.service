@@ -1,3 +1,4 @@
+# sudo apt install motion screen
 # cd ~/projects/makerbot-notify/conf
 # sudo cp motion.service  /etc/systemd/system/motion@.service
 # sudo chmod 644 /etc/systemd/system/motion@.service
@@ -14,7 +15,7 @@ ConditionPathExists=/home/dpc/.motion/motion.conf
 [Service]
 Type=forking
 WorkingDirectory=/home/dpc/.motion
-# run motion in non-daemon mode
+# run motion in non-daemon mode (in a screen session)
 ExecStart=/usr/bin/screen -dmS motionsvc -t time /usr/bin/motion -n -l /home/dpc/.motion/motion.log
 ExecStop=/usr/bin/screen -S motionsvc -p time -X stuff "^C"
 TimeoutStopSec=5

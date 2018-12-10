@@ -1,7 +1,30 @@
 # Use a USB thumb drive for photo / video storage
 
-Get to an auto mount USB disk
 
+# Using Makerware (Makerbot Desktop) in Ubuntu 16.04
+
+ - Rely on ubuntu 16.04 gnome desktop to mount drive
+ - Assuming a drive with label "motion-data" as below
+ - Different mount point than autofs
+   - `media` is assumed
+   - `dpc` is user name
+   - `motion-data` is disk label
+   - `data` is the top-level directory on the disk
+
+from `motion.conf`
+```
+target_dir  /media/dpc/motion-data/data/
+```
+
+## maintenance
+
+```shell
+find /media/dpc/motion-data/data/ -name "*.jpg" -type f -exec rm "{}" \;
+rm ~/.motion/motion.log
+touch ~/.motion/motion.log
+```
+
+# Get to an auto mount USB disk with autofs
 
 ```
 sudo apt-get install autofs
@@ -117,6 +140,8 @@ screen -r motionsvc
 <kbd>Ctrl-a d</kbd>
 
 ## maintenance
+
+
 
 ```shell
 find /misc/motion-data/data/ -name "*.jpg" -type f -exec rm "{}" \;

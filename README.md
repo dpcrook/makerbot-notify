@@ -1,10 +1,13 @@
 # makerbot-notify
 
-For Makerware print job (email) notifications (on Linux).
+For Makerware email notifications (on Linux).
+
+ - Can send an email when Makerware print job completes, even on older models
+   like the Replicator, or Replicator 2/2X.
+ - Can send (optional) webcam capture with the email, e.g. from `motion`
 
 ![Example motion capture][print_cap]
 
-It can be configured to send an email (with optional webcam capture) when a Makerware print job completes, even on older models like the Replicator, or Replicator 2/2X.
 
 # Background
 
@@ -14,26 +17,33 @@ I made this python script to fix that!
 
 # Limitations at the moment
 
- - requires gmail and Linux for email. filesystem stuff probably would need some updates on other platforms, but I haveen't tried
- - designed for tethered Makerware prints (locates and parses the app logfile)
- - probably many hardcoded things
+ - Requires gmail and Linux for email.
+   - filesystem stuff probably would need some updates on other platforms (have
+     not tried)
+ - Designed for tethered Makerware prints (locates and parses the app logfile)
+ - Probably many hardcoded things...
 
 # Usage
 
 
 ```bash
 cd ~/projects/makerbot-notify
-# first edit create_cfg.py to match your gmail setting
-./create_cfg.py
+cp ./create_cfg.py ./create_cfg_custom.py
+chmod +x ./create_cfg_custom.py
+
+# edit create_cfg_custom.py to match your gmail setting
+# - motion_dir should match motion.conf `target_dir`
+# - creates an output file 'example.json'
+./create_cfg_custom.py
+
 cd ~
 # <<assumes makerware is already open/running!>>
-
 ~/projects/makerbot-notify/read_log.py
 ```
 
-Relies on a JSON config file. Edit `create_cfg.py` to match your config, and generate one.  Then launch the script (after Makerware has been opened).
+Relies on a JSON config file. Copy `create_cfg.py` to `create_cfg_custom.py` to match your config. Run it to create `example.json` JSON config file.  Then launch the script (after Makerware has been opened).
 
-Added webcam support based on `motion` app, which is intended to send you an image from the completed print.
+Includes webcam support based on `motion` app, which can include an image from the completed print in the email.
 
 ### example output
 
@@ -57,13 +67,13 @@ Email sent!
 ## installing this script
 
  1. Clone the repo locally
- 1. Edit the `create_cfg.py` and run it
- 1. Run `read_log.py`
+ 1. Copy/customize `create_cfg.py` and then run it
+ 1. Run `read_log.py` which reads in config just created
 
 
-## Platform notes
+# Platform notes
 
-### ubuntu 16.04
+## Ubuntu 16.04
 
 
 
@@ -76,4 +86,4 @@ ImportError: No module named dateutil.parser
 sudo apt install python-dateutil
 ```
 
-[print_cap]: https://github.com/idcrook/makerbot-notify/raw/gh-pages/img/print_snapshot.jpg
+[print_cap]: https://idcrook.github.io/makerbot-notify/img/print_snapshot.jpg

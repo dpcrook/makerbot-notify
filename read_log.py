@@ -1,19 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Send notifications based on makerware print job status (from parsing logfile)
-
 #
 # TODO:
 #  - implement logging
-#  - send image from webcam with email?
-#  - class modules
-#  - create github repo
 #
 # DONE
 #  - email notification
 #  - use most recent logfile if none specified
+#  - send image from webcam with email?
+#  - create github repo
 #
-
 
 import dateutil.parser
 import datetime
@@ -32,43 +29,14 @@ from email.utils import COMMASPACE, formatdate
 
 exc_path = os.path.dirname(sys.argv[0])
 
-# http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-of-unicode-ones-from-json-in-python
-def json_load_byteified(file_handle):
-    return _byteify(
-        json.load(file_handle, object_hook=_byteify),
-        ignore_dicts=True
-    )
-
-def json_loads_byteified(json_text):
-    return _byteify(
-        json.loads(json_text, object_hook=_byteify),
-        ignore_dicts=True
-    )
-
-def _byteify(data, ignore_dicts = False):
-    # if this is a unicode string, return its string representation
-    if isinstance(data, unicode):
-        return data.encode('utf-8')
-    # if this is a list of values, return list of byteified values
-    if isinstance(data, list):
-        return [ _byteify(item, ignore_dicts=True) for item in data ]
-    # if this is a dictionary, return dictionary of byteified keys and values
-    # but only if we haven't already byteified it
-    if isinstance(data, dict) and not ignore_dicts:
-        return {
-            _byteify(key, ignore_dicts=True): _byteify(value, ignore_dicts=True)
-            for key, value in data.iteritems()
-        }
-    # if it's anything else, return it in its original form
-    return data
-
 CONFIG = {}
-with open (os.path.join(exc_path, 'example.json'), 'r') as jsonfile:
-    CONFIG = json_load_byteified(jsonfile)
+with open(os.path.join(exc_path, 'example.json'), 'r') as jsonfile:
+    CONFIG = json.loads(jsonfile.read())
 
+print(CONFIG)
 MOTION_DIR = CONFIG[1]['motion']['motion_dir']
-print 'will send any email as', CONFIG[0]['gmail']['gmail_user']
-print 'will look in motion dir', MOTION_DIR
+print('will send any email as', CONFIG[0]['gmail']['gmail_user'])
+print('will look in motion dir', MOTION_DIR)
 
 
 # http://code.activestate.com/recipes/157035-tail-f-in-python/#c4
@@ -84,6 +52,7 @@ def tail_f(file):
         else:
             yield line
 
+
 def send_notification(data):
     # print data
     status = data['status']
@@ -92,31 +61,37 @@ def send_notification(data):
     filename = data['filename']
     duration = done - start
     s = '%(duration)s job %(filename)s %(status)s' % vars()
-    print s
+    print(s)
     short = '%(status)s %(filename)s' % vars()
     if done > CURRENT_TIME:
-        print "will send notice"
+        print("will send notice")
         send_email(short, s)
 
+
 def send_email(subj, jobinfo):
-    print "sending email"
-    email_config =  CONFIG[0]['gmail']
-    gmail_user     =  email_config['gmail_user']
-    gmail_password =  email_config['gmail_password']
-    to             =  email_config['email_to_list']
-    subject        = subj
-    body           = jobinfo
-    fromc          = gmail_user
-    
+    print("sending email")
+    email_config = CONFIG[0]['gmail']
+    gmail_user = email_config['gmail_user']
+    gmail_password = email_config['gmail_password']
+    to = email_config['email_to_list']
+    subject = subj
+    body = jobinfo
+    fromc = gmail_user
+
     email_text = """\
-From: %s  
-To: %s  
+From: %s
+To: %s
 Subject: %s
 
 %s
-""" % (fromc, ", ".join(to), subject, body)
+""" % (
+        fromc,
+        ", ".join(to),
+        subject,
+        body,
+    )
 
-    #print email_text
+    # print email_text
 
     msg = MIMEMultipart()
     msg['From'] = fromc
@@ -125,32 +100,34 @@ Subject: %s
     msg['Subject'] = subject
 
     msg.attach(MIMEText(jobinfo))
-    #print msg
-    
+    # print msg
+
     motion_dir = MOTION_DIR
-    dated_files = [( os.path.getmtime(os.path.join(motion_dir, fn)), 
-                     os.path.basename(os.path.join(motion_dir, fn)) )
-               for fn in os.listdir(motion_dir) if fn.lower().endswith('.jpg')]
-    #print dated_files[-1]
+    dated_files = [
+        (
+            os.path.getmtime(os.path.join(motion_dir, fn)),
+            os.path.basename(os.path.join(motion_dir, fn)),
+        )
+        for fn in os.listdir(motion_dir)
+        if fn.lower().endswith('.jpg')
+    ]
+    # print dated_files[-1]
     dated_files.sort()
     dated_files.reverse()
     newest = dated_files[0][1]
     newest_minus_some = dated_files[9][1]
-    print newest, newest_minus_some
+    print(newest, newest_minus_some)
     filename = os.path.join(motion_dir, newest_minus_some)
-    
+
     files = [filename]
     for f in files or []:
-    
+
         with open(f, "rb") as fil:
-            part = MIMEApplication(
-                fil.read(),
-                Name=basename(f)
-            )
+            part = MIMEApplication(fil.read(), Name=basename(f))
             part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
             msg.attach(part)
-    
-    try:  
+
+    try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         if True:
             server.ehlo()
@@ -158,11 +135,10 @@ Subject: %s
             server.sendmail(fromc, to, msg.as_string())
             server.close()
 
-        print 'Email sent!'
-    except:  
-        print 'Something went wrong...'
-    
-    
+        print('Email sent!')
+    except:
+        print('Something went wrong...')
+
 
 inputFile = re.compile(r'\s*"input_file"\s*\:\s*"([^"]+)"')
 
@@ -205,32 +181,37 @@ logfile_dir = os.path.expanduser("~/Things/Logs")
 if sys.argv[1:]:
     logfile_name = sys.argv[1]
 else:
-    
-    dated_files = [( os.path.getmtime(os.path.join(logfile_dir, fn)), 
-                     os.path.basename(os.path.join(logfile_dir, fn)) )
-               for fn in os.listdir(logfile_dir) if fn.lower().endswith('.log')]
+
+    dated_files = [
+        (
+            os.path.getmtime(os.path.join(logfile_dir, fn)),
+            os.path.basename(os.path.join(logfile_dir, fn)),
+        )
+        for fn in os.listdir(logfile_dir)
+        if fn.lower().endswith('.log')
+    ]
     # print dated_files
     dated_files.sort()
     dated_files.reverse()
     newest = dated_files[0][1]
     logfile_name = os.path.join(logfile_dir, newest)
-    
-print logfile_name
 
-for line in tail_f(open(logfile_name,'r')):
+print(logfile_name)
+
+for line in tail_f(open(logfile_name, 'r')):
     i += 1
     line1 = line2
     line2 = line3
     line3 = line
     # print i
-    
+
     m = jobWatch.search(line1)
     if m:
         # print JOB_INFO
         timestamp = dateutil.parser.parse(line2)
         # print line1.strip()
         # print timestamp
-        print line3.strip()
+        print(line3.strip())
         if jobWatchjobChanged.search(line1):
             status = jobChanged.search(line3)
             if status:
@@ -245,10 +226,10 @@ for line in tail_f(open(logfile_name,'r')):
         elif jobWatchjobSetJobID.search(line1):
             jobId = setJobID.search(line3)
             if jobId:
-                JOB_INFO[jobId.group(1)] = {'start_time' : timestamp}
-            
+                JOB_INFO[jobId.group(1)] = {'start_time': timestamp}
+
     g = inputFile.match(line1)
     if g:
         # print g.groups()
         filename = os.path.basename(g.group(1))
-        #print filename
+        # print filename

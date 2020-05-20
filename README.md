@@ -13,6 +13,11 @@ For Makerware email notifications (on Linux)
 
 ![Example motion capture](img/print_snapshot.jpg)
 
+History
+=======
+
+* 2020-05-19: python3 only now
+
 Background
 ==========
 
@@ -26,7 +31,7 @@ Limitations at the moment
 -	Assumes gmail + Linux for email.
 	-	filesystem stuff probably would need some updates on other platforms (have not tried)
 -	Designed for USB tethered Makerware prints
-    - Works by locating and parsing the Makerware's app logfile
+	-	Works by locating and parsing the Makerware's app logfile
 
 Usage
 =====
@@ -89,5 +94,5 @@ ImportError: No module named dateutil.parser
 ```
 
 ```
-sudo apt install python-dateutil
+sudo apt install python3-dateutil
 ```

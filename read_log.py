@@ -2,8 +2,8 @@
 
 # Send notifications based on makerware print job status (from parsing logfile)
 #
-# TODO:
-#  - implement logging
+# TODO: implement logging
+# TODO: update instructions for USB thumbdrive and motion webcam capture
 #
 # DONE
 #  - email notification

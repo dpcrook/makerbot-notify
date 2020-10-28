@@ -35,6 +35,10 @@ with open(os.path.join(exc_path, 'example.json'), 'r') as jsonfile:
 
 print(CONFIG)
 MOTION_DIR = CONFIG[1]['motion']['motion_dir']
+if not os.path.isdir(MOTION_DIR):
+    err_msg = "ERROR: Could not find MOTION directory %s" % MOTION_DIR
+    raise SystemExit(err_msg)
+
 print('will send any email as', CONFIG[0]['gmail']['gmail_user'])
 print('will look in motion dir', MOTION_DIR)
 

@@ -79,23 +79,7 @@ def send_email(subj, jobinfo):
     gmail_password = email_config['gmail_password']
     to = email_config['email_to_list']
     subject = subj
-    body = jobinfo
     fromc = gmail_user
-
-    email_text = """\
-From: %s
-To: %s
-Subject: %s
-
-%s
-""" % (
-        fromc,
-        ", ".join(to),
-        subject,
-        body,
-    )
-
-    # print email_text
 
     msg = MIMEMultipart()
     msg['From'] = fromc
@@ -107,14 +91,10 @@ Subject: %s
     # print msg
 
     motion_dir = MOTION_DIR
-    dated_files = [
-        (
-            os.path.getmtime(os.path.join(motion_dir, fn)),
-            os.path.basename(os.path.join(motion_dir, fn)),
-        )
-        for fn in os.listdir(motion_dir)
-        if fn.lower().endswith('.jpg')
-    ]
+    dated_files = [(
+        os.path.getmtime(os.path.join(motion_dir, fn)),
+        os.path.basename(os.path.join(motion_dir, fn)),
+    ) for fn in os.listdir(motion_dir) if fn.lower().endswith('.jpg')]
     # print dated_files[-1]
     dated_files.sort()
     dated_files.reverse()
@@ -128,7 +108,9 @@ Subject: %s
 
         with open(f, "rb") as fil:
             part = MIMEApplication(fil.read(), Name=basename(f))
-            part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
+            part[
+                'Content-Disposition'] = 'attachment; filename="%s"' % basename(
+                    f)
             msg.attach(part)
 
     try:
@@ -186,14 +168,10 @@ if sys.argv[1:]:
     logfile_name = sys.argv[1]
 else:
 
-    dated_files = [
-        (
-            os.path.getmtime(os.path.join(logfile_dir, fn)),
-            os.path.basename(os.path.join(logfile_dir, fn)),
-        )
-        for fn in os.listdir(logfile_dir)
-        if fn.lower().endswith('.log')
-    ]
+    dated_files = [(
+        os.path.getmtime(os.path.join(logfile_dir, fn)),
+        os.path.basename(os.path.join(logfile_dir, fn)),
+    ) for fn in os.listdir(logfile_dir) if fn.lower().endswith('.log')]
     # print dated_files
     dated_files.sort()
     dated_files.reverse()
